@@ -5,6 +5,7 @@ Higgs Boson Challenge
 Due August 21:<br>
   Entire Team --><br> 
     * Perform all single basic algorithms + determine what features to use + document all AMS scores<br>
+    * stretch goal: create and perform ensemble train/validate/testing pipeline
   Deepak --><br>
     * perform Naive Bayes algorithm (varying 6 imputter, 2 scaler, 2 pca, n thresholds)<br>
     * perform Logistic Regression algorithm (varying 6 imputter, 2 scaler, 2 pca, n thresholds)<br>
