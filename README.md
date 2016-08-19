@@ -14,6 +14,7 @@ Due August 21:<br><br>
   <strong>Deepak:</strong><br>
     * Featurre analysis - find what predictors have multicollinearity and analyze what can be dropped<br>
     * Investigate if features can be dropped based on a mutated new fields using Particile Physics formulas<br>
+    * Determine what rows/observations can be dropped on missingness impact (if at all)<br>
     * Use R or Phython to create visualizations on feature analysis and engineering<br>
 
   <strong>Nanda:</strong><br>
