@@ -19,17 +19,17 @@ Due August 21:<br><br>
   Nanda:<br>
     * Help Venkat on the Model Ensemble pipeline<br>
     * Perform SVM, and Boosting algorithm (varying 6 imputter, 2 scaler, 2 pca, n thresholds)<br>
-    * Perform XGBoost algorithm (varying 6 imputter, 2 scaler, 2 pca, n thresholds)<br><br>
+    * Perform XGBoost algorithm (varying 6 imputter, 2 scaler, 2 pca, n thresholds)<br>
 
   Venkat:<br>
     * Enhance code to extend imputter to include K-Nearest Neighbors<br>
-    * Start writing framework pipeline code for the Model Ensemble<br><br>
+    * Start writing framework pipeline code for the Model Ensemble<br>
   
   Bernard:<br>
     * Create AMS reporting sheet for all parameter combinations<br>
     * Enhance code to extend sklearn imputter to include "median" and "most_frequent" strategies<br>
     * Enhance code to run as a batch using command line params (higgs_adv_batch.py)<br>
-    * Implement and test feasibility of using deep learning algorithm using Theano/Pylearn2<br><br>
+    * Implement and test feasibility of using deep learning algorithm using Theano/Pylearn2<br>
 
 Team Demibots Members:<br>
   <li>Bernard</li>
