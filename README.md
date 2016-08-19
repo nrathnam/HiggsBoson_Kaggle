@@ -13,8 +13,8 @@ Due August 21:<br><br>
 
   Deepak:<br>
     * Featurre analysis - find what predictors have multicollinearity and analyze what can be dropped<br>
-    * Investigate if features can be dropped based on a mutated new fields using Particile Physics formulas<br><br>
-    * Use R or Phython to create visualizations on feature analysis and engineering
+    * Investigate if features can be dropped based on a mutated new fields using Particile Physics formulas<br>
+    * Use R or Phython to create visualizations on feature analysis and engineering<br>
 
   Nanda:<br>
     * Help Venkat on the Model Ensemble pipeline<br>
@@ -28,6 +28,7 @@ Due August 21:<br><br>
   Bernard:<br>
     * Create AMS reporting sheet for all parameter combinations<br>
     * Enhance code to extend sklearn imputter to include "median" and "most_frequent" strategies<br>
+    * Enhance code to run as a batch using command line params (higgs_adv_batch.py)<br>
     * Implement and test feasibility of using deep learning algorithm using Theano/Pylearn2<br><br>
 
 Team Demibots Members:<br>
