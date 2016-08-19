@@ -8,7 +8,7 @@ Due August 21:<br><br>
     * Perform all single basic algorithms + determine what features to use + document all AMS scores<br>
     * Start documenting and sending me your materials for slides (in PPT is ok)<br>
     * When you're writing code, fork your own first, then after full unit test, merge into higgs_adv_new.py<br>
-    * Be sure to write code that is self-contained so you do not affect other functions within the entire source file
+    * Be sure to write code that is self-contained so you do not affect other functions within the entire source file<br>
     * stretch goal: create and perform ensemble train/validate/testing pipeline<br><br>
 
   Deepak:<br>
