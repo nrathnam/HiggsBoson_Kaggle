@@ -9,7 +9,7 @@ from sklearn import linear_model
 from sklearn import naive_bayes
 from sklearn import preprocessing
 from sklearn import svm
-
+from fancyimpute import KNN #, BiScaler, NuclearNormMinimization, SoftImpute
 import xgboost as xgb
 
 def ams(s, b):
@@ -66,7 +66,8 @@ def process_training_data(filename, features, impute, standardize, whiten):
     w = training_data.iloc[:, features+1].values
 
     # optionally impute the -999 values
-    # Bernard - I added the median and most frequent code for imputting
+    # Bernard - added the median and most frequent code for imputting
+    # Venkat - added the Knn and Interpolate imputation
     # defaults mean if passed with no parameters
     if impute == 'mean':
         imp = preprocessing.Imputer(missing_values=-999, strategy="mean")
@@ -77,6 +78,15 @@ def process_training_data(filename, features, impute, standardize, whiten):
     elif impute == "most_frequent":
         imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
+    elif impute == "knn":
+        X = X.replace('-999','NaN')
+        X = KNN(k=sqrt(len(X)).complete(X)
+    elif impute == "interpolate":
+        X = X.replace('-999','NaN')
+        X = X.interpolate()
+    #elif impute == 'biscaler':
+    #elif impute == "nuclear":
+    #elif impute == "softimpute":
     elif impute == 'zeros':
         X[X == -999] = 0
 
@@ -288,7 +298,8 @@ def process_test_data(filename, features, impute):
     X_test = test_data.iloc[:, 1:features+1].values
 
     # optionally impute the -999 values
-    # Bernard - I added the median and most frequent code for imputting
+    # Bernard - added the median and most frequent code for imputting
+    # Venkat - added the Knn and Interpolate imputation
     # defaults mean if passed with no parameters
     if impute == 'mean':
         imp = preprocessing.Imputer(missing_values=-999, strategy="mean")
@@ -299,6 +310,15 @@ def process_test_data(filename, features, impute):
     elif impute == "most_frequent":
         imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
+    elif impute == "knn":
+        X = X.replace('-999','NaN')
+        X = KNN(k=sqrt(len(X)).complete(X)
+    elif impute == "interpolate":
+        X = X.replace('-999','NaN')
+        X = X.interpolate()
+    #elif impute == 'biscaler':
+    #elif impute == "nuclear":
+    #elif impute == "softimpute":
     elif impute == 'zeros':
         X[X == -999] = 0
 
@@ -338,8 +358,8 @@ def main():
     features = 30
     threshold = 83
     alg = 'bayes'  # bayes, logistic, svm, boost, xgboost
-    impute = 'none'  # mean, median, most_frequent, zeros, none
-    standardize = False
+    impute = 'median'  # mean, median, most_frequent, , knn, interpolate, zeros, none
+    standardize = True
     whiten = False
     load_training_data = True
     load_model = False
