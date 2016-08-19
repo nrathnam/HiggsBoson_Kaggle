@@ -29,6 +29,7 @@ Due August 21:<br><br>
     * Create AMS reporting sheet for all parameter combinations<br>
     * Enhance code to extend sklearn imputter to include "median" and "most_frequent" strategies<br>
     * Enhance code to run as a batch using command line params (higgs_adv_batch.py)<br>
+    * Start compiling and preparing presentation slides<br>
     * Implement and test feasibility of using deep learning algorithm using Theano/Pylearn2<br>
 
 <strong>Team Demibots Members:</strong><br>
