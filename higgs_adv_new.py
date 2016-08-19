@@ -66,8 +66,16 @@ def process_training_data(filename, features, impute, standardize, whiten):
     w = training_data.iloc[:, features+1].values
 
     # optionally impute the -999 values
+    # Bernard - I added the median and most frequent code for imputting
+    # defaults mean if passed with no parameters
     if impute == 'mean':
-        imp = preprocessing.Imputer(missing_values=-999)
+        imp = preprocessing.Imputer(missing_values=-999, strategy="mean")
+        X = imp.fit_transform(X)
+    elif impute == "median":
+        imp = preprocessing.Imputer(missing_values=-999, strategy="median")
+        X = imp.fit_transform(X)
+    elif impute == "most_frequent":
+        imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
     elif impute == 'zeros':
         X[X == -999] = 0
@@ -279,11 +287,20 @@ def process_test_data(filename, features, impute):
     test_data = pd.read_csv(filename, sep=',')
     X_test = test_data.iloc[:, 1:features+1].values
 
+    # optionally impute the -999 values
+    # Bernard - I added the median and most frequent code for imputting
+    # defaults mean if passed with no parameters
     if impute == 'mean':
-        imp = preprocessing.Imputer(missing_values=-999)
-        X_test = imp.fit_transform(X_test)
+        imp = preprocessing.Imputer(missing_values=-999, strategy="mean")
+        X = imp.fit_transform(X)
+    elif impute == "median":
+        imp = preprocessing.Imputer(missing_values=-999, strategy="median")
+        X = imp.fit_transform(X)
+    elif impute == "most_frequent":
+        imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
+        X = imp.fit_transform(X)
     elif impute == 'zeros':
-        X_test[X_test == -999] = 0
+        X[X == -999] = 0
 
     return test_data, X_test
 
@@ -320,8 +337,8 @@ def main():
     # perform some initialization
     features = 30
     threshold = 83
-    alg = 'boost'  # bayes, logistic, boost, xgboost
-    impute = 'zeros'  # zeros, mean, none
+    alg = 'bayes'  # bayes, logistic, svm, boost, xgboost
+    impute = 'none'  # mean, median, most_frequent, zeros, none
     standardize = False
     whiten = False
     load_training_data = True
@@ -340,7 +357,7 @@ def main():
     os.chdir(code_dir)
 
     print 'Starting process...'
-    print 'alg={0}, impute={1}, standardize={2}, whiten={3} threshold={4}'.format(
+    print 'alg={0}, impute={1}, standardize={2}, whiten={3}, threshold={4}'.format(
         alg, impute, standardize, whiten, threshold)
 
     if load_training_data:
