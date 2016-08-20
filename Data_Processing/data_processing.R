@@ -181,7 +181,7 @@ dev.off()
 png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/confident_interval_siginficant_correlation.png",
     width = 1000 ,
     height = 600)
-corrplot(M, p.mat = res1[[1]],                   #Confidence Interval plot
+corrplot(M, p.mat = res1[[1]],                   #Confidence Interval
          low=res1[[2]], upp=res1[[3]],            
          method=method,
          order =order,
