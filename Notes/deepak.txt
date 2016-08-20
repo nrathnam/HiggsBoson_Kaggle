@@ -11,7 +11,7 @@ o Did Missingness analysis
 
 Conclusions
 
-o PRI_jet_num is a categorical variable telling which of 4 jets(1,2,3,4) event happened 
+o PRI_jet_num is a categorical variable telling which of 4 { jets(1,2,3) and no (0) jet }event happened 
 o scale all the data except PRI_jet_num  before using algorithims 
 o 7 variables are missing more than 70 % of data in training set 
 	"DER_mass_transverse_met_lep" 
