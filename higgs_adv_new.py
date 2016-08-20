@@ -80,7 +80,7 @@ def process_training_data(filename, features, impute, standardize, whiten):
         X = imp.fit_transform(X)
     elif impute == "knn":
         X = X.replace('-999','NaN')
-        X = KNN(k=sqrt(len(X)).complete(X)
+        X = KNN(k=sqrt(len(X)).complete(X))
     elif impute == "interpolate":
         X = X.replace('-999','NaN')
         X = X.interpolate()
@@ -312,7 +312,7 @@ def process_test_data(filename, features, impute):
         X = imp.fit_transform(X)
     elif impute == "knn":
         X = X.replace('-999','NaN')
-        X = KNN(k=sqrt(len(X)).complete(X)
+        X = KNN(k=sqrt(len(X)).complete(X))
     elif impute == "interpolate":
         X = X.replace('-999','NaN')
         X = X.interpolate()
@@ -357,15 +357,15 @@ def main():
     # perform some initialization
     features = 30
     threshold = 83
-    alg = 'bayes'  # bayes, logistic, svm, boost, xgboost
-    impute = 'median'  # mean, median, most_frequent, , knn, interpolate, zeros, none
-    standardize = True
+    alg = 'xgboost'  # bayes, logistic, svm, boost, xgboost
+    impute = 'none'  # mean, median, most_frequent, , knn, interpolate, zeros, none
+    standardize = False
     whiten = False
     load_training_data = True
     load_model = False
     train_model = True
     save_model = False
-    create_visualizations = True
+    create_visualizations = False
     create_submission_file = False
     code_dir = './'
     data_dir = './'
