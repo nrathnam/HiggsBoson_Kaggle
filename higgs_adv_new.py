@@ -9,7 +9,8 @@ from sklearn import linear_model
 from sklearn import naive_bayes
 from sklearn import preprocessing
 from sklearn import svm
-from fancyimpute import KNN #, BiScaler, NuclearNormMinimization, SoftImpute
+# from fancyimpute import KNN
+# BiScaler, NuclearNormMinimization, SoftImpute
 import xgboost as xgb
 
 def ams(s, b):
@@ -78,12 +79,12 @@ def process_training_data(filename, features, impute, standardize, whiten):
     elif impute == "most_frequent":
         imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
-    elif impute == "knn":
-        X = X.replace('-999','NaN')
-        X = KNN(k=sqrt(len(X)).complete(X))
-    elif impute == "interpolate":
-        X = X.replace('-999','NaN')
-        X = X.interpolate()
+    #elif impute == "knn":
+        #X = X.replace('-999','NaN')
+        #X = KNN(k=sqrt(len(X))).complete(X)
+    #elif impute == "interpolate":
+        #X[X==-999] = np.NaN
+        #X = X.interpolate()
     #elif impute == 'biscaler':
     #elif impute == "nuclear":
     #elif impute == "softimpute":
@@ -310,12 +311,12 @@ def process_test_data(filename, features, impute):
     elif impute == "most_frequent":
         imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
-    elif impute == "knn":
-        X = X.replace('-999','NaN')
-        X = KNN(k=sqrt(len(X)).complete(X))
-    elif impute == "interpolate":
-        X = X.replace('-999','NaN')
-        X = X.interpolate()
+    #elif impute == "knn":
+        #X = X.replace('-999','NaN')
+        #X = KNN(k=sqrt(len(X))).complete(X)
+    #elif impute == "interpolate":
+        #X[X==-999] = np.NaN
+        #X = X.interpolate()
     #elif impute == 'biscaler':
     #elif impute == "nuclear":
     #elif impute == "softimpute":
@@ -356,9 +357,9 @@ def create_submission(test_data, y_test_prob, y_test_est, submit_file):
 def main():
     # perform some initialization
     features = 30
-    threshold = 83
+    threshold = 85
     alg = 'xgboost'  # bayes, logistic, svm, boost, xgboost
-    impute = 'none'  # mean, median, most_frequent, , knn, interpolate, zeros, none
+    impute = 'interpolate'  # mean, median, most_frequent, knn, interpolate, zeros, none
     standardize = False
     whiten = False
     load_training_data = True
