@@ -7,7 +7,10 @@ library(MASS)
 library(corrplot)
 library(car)
 
-data = read.csv('/Users/dk1306/downloads/training.csv', header=T)
+setwd('/Users/dk1306/nycdsa-kaggle-project/Data_Processing/')
+
+path_to_data_file = '/Users/dk1306/downloads/training.csv'
+data = read.csv(path_to_data_file, header=T)
 
 data[data==-999.0] = NA
 data[data==-999.0] = NA
@@ -77,39 +80,32 @@ max((Response$Weight[Response$Label == 's'])) < min(Response$Weight[Response$Lab
 
 
 #~~~~~~~~~~~~~
-
-
 g = ggplot(data = Response, aes(x =Weight))
 g + geom_histogram(aes(fill = Label), binwidth = 0.1)
-ggsave("/Users/dk1306/nycdsa-kaggle-project/Data_Processing/s_AND_b_weight_histogram.png")
+ggsave("plots/s_AND_b_weight_histogram.png")
 
 
 g = ggplot(data = Response[Response$Weight <= max(Response$Weight[Response$Label == 's']),], aes(x =Weight))
 g + geom_histogram(aes(fill = Label), binwidth = 0.0002)
-ggsave("/Users/dk1306/nycdsa-kaggle-project/Data_Processing/s_weight_histogram.png")
+ggsave("plots/s_weight_histogram.png")
 
 g = ggplot(data = Response[Response$Weight > max(Response$Weight[Response$Label == 's']),], aes(x =Weight))
 g + geom_histogram(aes(fill = Label), binwidth = 0.1)
-ggsave("/Users/dk1306/nycdsa-kaggle-project/Data_Processing/b_weight_histogram.png")
-
+ggsave("plots/b_weight_histogram.png")
 
 #####################################################################################
 
+data.variable = as.data.frame(cbind(data,"Label" = as.factor(Label)))       
 
-cor(data[complete.cases(data),])
-plot(data[1:11],col = data$response)
+plots <- list()
+for (nm in names(data.variable)){
+  plots[[nm]] <- ggplot(data=data.variable) + geom_density(aes_string(x=nm))  + geom_density(aes(color= Label))
+                                                                                                 
+}
 
-ggplot( data = data, aes(x = fixed.acidity )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = volatile.acidity )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = citric.acid )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = residual.sugar )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = chlorides )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = free.sulfur.dioxide )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = total.sulfur.dioxide )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = density )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = pH )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = sulphates )) + geom_density()  + geom_density(aes(color = response))
-ggplot( data = data, aes(x = alcohol )) + geom_density()  + geom_density(aes(color = response))
+
+
+
 
 
 
@@ -130,7 +126,7 @@ addrect=3
 
 
 
-png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/full_correlation.png",  
+png(filename="plots/full_correlation.png",  
     width = 800 ,
     height = 600)
 corrplot(M, type=type,         #Full correlation
@@ -168,7 +164,7 @@ res2 <- cor.mtest(data_corr,0.99)         #95 % significance
 
 type="lower" 
 
-png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/siginficant_correlation.png",width = 1000 ,height = 600)
+png(filename="plots/siginficant_correlation.png",width = 1000 ,height = 600)
 corrplot(M, type=type,            #crossing out less significant correlations
          method=method,
          order =order,
@@ -178,7 +174,7 @@ corrplot(M, type=type,            #crossing out less significant correlations
          insig = "pch")
 dev.off()
 
-png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/confident_interval_siginficant_correlation.png",
+png(filename="plots/confident_interval_siginficant_correlation.png",
     width = 1000 ,
     height = 600)
 corrplot(M, p.mat = res1[[1]],                   #Confidence Interval
