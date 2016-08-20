@@ -1,11 +1,14 @@
 8/17/2016
+
 Joined the group 
 Had awesome lunch courtesy Venkat 
 Bernard for president
+___________________________________________________________________________
 
 8/20/2016
+
 o scale all the data except PRI_jet_num  before using algorithims 
-o PRI_jet_num is a categoricl variable telling which of 4 jets(1,2,3,4) event happened 
+o PRI_jet_num is a categorical variable telling which of 4 jets(1,2,3,4) event happened 
 o 7 variables are missing more than 70 % of data in training set 
 	"DER_mass_transverse_met_lep" 
 	"DER_mass_vis"
@@ -14,6 +17,21 @@ o 7 variables are missing more than 70 % of data in training set
 	"DER_pt_tot"
 	"DER_sum_pt"
 	"DER_pt_ratio_lep_tau" 
+___________________________________________________________________________
+
+8/20/2016
+
+o Did Numerical and graphical EDA on response (Labels and weights) 
+o Added histogram plot shows exclusiveness of signal and background in weights assigned
+o Added plots for separate histograms for signal and Background
+
+Conclusions 
+
+o Weights and Labels are dependent on each other from chisquare test of dependence
+o Signal events have low weights and totally exclusive and less than Background events and two are exclusive in weights 
+o Signal seems to have only three weights Looks like they are looking for three events but different channels 
+
+
 
 
 
