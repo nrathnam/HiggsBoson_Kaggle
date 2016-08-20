@@ -25,14 +25,14 @@ ___________________________________________________________________________
 
 8/20/2016
 
-o Did Numerical and graphical EDA on response (Labels and weights) 
-o Added histogram plot shows exclusiveness of signal and background in weights assigned
-o Added plots for separate histograms for signal and Background
+o Did Numerical and graphical EDA on response variables (Labels and weights) 
+o Added 3  histograms for 1) signal ,2) Background and 3) signal + background 
 
 Conclusions 
 
 o Weights and Labels are dependent on each other from chisquare test of dependence
-o Signal events have low weights and totally exclusive and less than Background events  
+o Signal events have low weights and Background events have high weights
+o Signal events weight range is exclusively separated from background event weight range 
 o Signal seems to have only three weights Looks like they are looking for three events but different channels 
 
 
