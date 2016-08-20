@@ -8,6 +8,7 @@ ___________________________________________________________________________
 8/20/2016
 
 o Did Missingness analysis
+P Added missigness plot
 
 Conclusions
 
@@ -26,7 +27,7 @@ ___________________________________________________________________________
 8/20/2016
 
 o Did Numerical and graphical EDA on response variables (Labels and weights) 
-o Added 3  histograms for 1) signal ,2) Background and 3) signal + background 
+P Added 3  histograms for 1) signal ,2) Background and 3) signal + background 
 
 Conclusions 
 
