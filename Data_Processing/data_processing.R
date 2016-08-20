@@ -4,6 +4,8 @@ library(mice)
 library(PASWR)
 library(ggplot2)
 library(MASS)
+library(corrplot)
+library(car)
 
 data = read.csv('/Users/dk1306/downloads/training.csv', header=T)
 
@@ -92,3 +94,36 @@ ggsave("/Users/dk1306/nycdsa-kaggle-project/Data_Processing/b_weight_histogram.p
 
 
 #####################################################################################
+
+
+cor(data[complete.cases(data),])
+plot(data[1:11],col = data$response)
+
+ggplot( data = data, aes(x = fixed.acidity )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = volatile.acidity )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = citric.acid )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = residual.sugar )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = chlorides )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = free.sulfur.dioxide )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = total.sulfur.dioxide )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = density )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = pH )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = sulphates )) + geom_density()  + geom_density(aes(color = response))
+ggplot( data = data, aes(x = alcohol )) + geom_density()  + geom_density(aes(color = response))
+
+
+M = round(cor(data[complete.cases(data),]),2)
+colnames(M) = c(1:nrow(M))
+rownames(M) =  paste(c(1:nrow(M)), rownames(M), sep = ') ')
+
+
+
+
+type="full"         # "full" , "upper" , "lower"
+method="circle"     # "circle", "square", "ellipse", "number", "shade", "color", "pie"
+order = "hclust"        # "AOE", "FPC", "hclust", "alphabet"
+addrect=3
+
+
+corrplot(M, type=type, method=method,order =order,addrect=addrect, cl.ratio=0.2, cl.align="r" )
+
