@@ -34,7 +34,7 @@ Conclusions
 o Weights and Labels are dependent on each other from chisquare test of dependence
 o Signal events have low weights and Background events have high weights
 o Signal events weight range is exclusively separated from background event weight range 
-o Signal seems to have only three weights Looks like they are looking for three events but different channels 
+o Signal seems to have only three weights Looks like they are looking for three channels of Higgs Boson 
 
 
 
