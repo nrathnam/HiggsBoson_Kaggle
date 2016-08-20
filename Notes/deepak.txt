@@ -39,4 +39,17 @@ o Signal seems to have only three weights Looks like they are looking for three 
 
 
 
+___________________________________________________________________________
+
+8/20/2016
+
+o Visual EDA continued
+P Correlation Plots , significance , confidence intervals 
+P Histograms and density plots of all variables 
+
+?????? Need to check amount of data dependency of all plots
+
+Conclusions
+Lots of plots Work in progress 
+
 
