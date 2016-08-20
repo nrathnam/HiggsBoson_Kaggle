@@ -112,11 +112,15 @@ ggplot( data = data, aes(x = sulphates )) + geom_density()  + geom_density(aes(c
 ggplot( data = data, aes(x = alcohol )) + geom_density()  + geom_density(aes(color = response))
 
 
-M = round(cor(data[complete.cases(data),]),2)
-colnames(M) = c(1:nrow(M))
-rownames(M) =  paste(c(1:nrow(M)), rownames(M), sep = ') ')
 
 
+
+data_corr = data[complete.cases(data),]    # Events with complete data 
+M = round(cor(data_corr),2)                # Correlation matrix rounded to two significant digits 
+
+
+colnames(M) = c(1:nrow(M))                 # Renaming columns for ease of viewing plot 
+rownames(M) =  paste(c(1:nrow(M)), rownames(M), sep = ') ')   # Tagging row names with column indices of M 
 
 
 type="full"         # "full" , "upper" , "lower"
@@ -125,5 +129,55 @@ order = "hclust"        # "AOE", "FPC", "hclust", "alphabet"
 addrect=3
 
 
-corrplot(M, type=type, method=method,order =order,addrect=addrect, cl.ratio=0.2, cl.align="r" )
+
+png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/full_correlation.png",  
+    width = 800 ,
+    height = 600)
+corrplot(M, type=type,         #Full correlation
+         method=method,
+         order =order,
+         addrect=addrect,
+         cl.ratio=0.2,
+         cl.align="r" )
+dev.off()
+
+
+#Test of siginificance of correlation 
+
+cor.mtest <- function(mat, conf.level = 0.95){
+  mat <- as.matrix(mat)
+  n <- ncol(mat)
+  p.mat <- lowCI.mat <- uppCI.mat <- matrix(NA, n, n)
+  diag(p.mat) <- 0
+  diag(lowCI.mat) <- diag(uppCI.mat) <- 1
+  for(i in 1:(n-1)){
+    for(j in (i+1):n){
+      tmp <- cor.test(mat[,i], mat[,j], conf.level = conf.level)
+      p.mat[i,j] <- p.mat[j,i] <- tmp$p.value
+      lowCI.mat[i,j] <- lowCI.mat[j,i] <- tmp$conf.int[1]
+      uppCI.mat[i,j] <- uppCI.mat[j,i] <- tmp$conf.int[2]
+    }
+  }
+  return(list(p.mat, lowCI.mat, uppCI.mat))
+}
+
+res1 <- cor.mtest(data_corr,0.95)         #95 % significance
+res2 <- cor.mtest(data_corr,0.99)         #95 % significance
+
+
+
+type="lower" 
+
+png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/siginficant_correlation.png",width = 1000 ,height = 600)
+corrplot(M, type=type,            #crossing out less significant correlations
+         method=method,
+         order =order,
+         addrect=addrect, 
+         p.mat = res1[[1]], 
+         sig.level=0.05,
+         insig = "pch")
+dev.off()
+
+
+
 
