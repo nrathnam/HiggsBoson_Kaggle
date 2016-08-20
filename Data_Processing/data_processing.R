@@ -5,6 +5,8 @@ library(PASWR)
 
 data = read.csv('/Users/dk1306/downloads/training.csv', header=T)
 
+data[data==-999.0] = NA
+data[data==-999.0] = NA
 
 EventId = data$EventId
 Weight  = data$Weight
@@ -40,3 +42,13 @@ sum(complete.cases(data)) / nrow(data)*100    # % of events/rows with complete d
 
 aggr(data)                   # Display Missinggness
 md.pattern(data)             # Missingness in numerical format 
+
+#####################################################################################
+scaled_Weight = Weight/max(Weight)
+n.bin = 200
+labels=c(1:n.bin )/n.bin
+f = cut(scaled_Weight,n.bin ,labels=labels)
+table(Label,f)
+
+
+
