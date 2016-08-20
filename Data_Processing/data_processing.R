@@ -130,7 +130,7 @@ addrect=3
 
 
 
-png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/full_correlation.png",  
+png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/full_correlation.png",  
     width = 800 ,
     height = 600)
 corrplot(M, type=type,         #Full correlation
@@ -168,7 +168,7 @@ res2 <- cor.mtest(data_corr,0.99)         #95 % significance
 
 type="lower" 
 
-png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/siginficant_correlation.png",width = 1000 ,height = 600)
+png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/siginficant_correlation.png",width = 1000 ,height = 600)
 corrplot(M, type=type,            #crossing out less significant correlations
          method=method,
          order =order,
@@ -178,6 +178,18 @@ corrplot(M, type=type,            #crossing out less significant correlations
          insig = "pch")
 dev.off()
 
-
-
-
+png(filename="/Users/dk1306/nycdsa-kaggle-project/Data_Processing/plots/confident_interval_siginficant_correlation.png",
+    width = 1000 ,
+    height = 600)
+corrplot(M, p.mat = res1[[1]],                   #Confidence Interval plot
+         low=res1[[2]], upp=res1[[3]],            
+         method=method,
+         order =order,
+         pch.col="red",
+         sig.level = 0.05,
+         addrect=3,
+         rect.col="navy",
+         plotC="rect",
+         cl.pos="n", 
+         type=type)
+dev.off()
