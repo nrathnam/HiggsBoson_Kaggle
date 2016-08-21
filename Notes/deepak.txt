@@ -22,6 +22,14 @@ o 7 variables are missing more than 70 % of data in training set
 	"DER_pt_tot"
 	"DER_sum_pt"
 	"DER_pt_ratio_lep_tau" 
+
+ooo From Kaggle
+~~~it can happen that for some entries some variables are meaningless or cannot be computed; in this case, their value is −999.0, which is outside the normal range of all variables
+
+
+Another reason to not impute -999.0
+
+
 ___________________________________________________________________________
 
 8/20/2016
@@ -51,5 +59,44 @@ P Histograms and density plots of all variables
 
 Conclusions
 Lots of plots Work in progress 
+
+
+___________________________________________________________________________
+
+8/21/2016
+
+o Reading Documents of Higgs Kaggle Challenge for more insights
+
+##############################################################
+
+Source  https://www.kaggle.com/c/higgs-boson/data
+
+-> variables prefixed with PRI (for PRImitives) are “raw” quantities about the bunch collision as measured by the detector.
+-> variables prefixed with DER (for DERived) are quantities computed from the primitive features, which were selected by  the physicists of ATLAS
+
+Conclusions
+
+1) Not worth spending time coming up with the formula It's already done for us 
+
+
+-> it can happen that for some entries some variables are meaningless or cannot be computed; in this case, their value is −999.0, which is outside the normal range of all variables
+
+
+Conclusions
+
+1)Imputation is a bad idea and wrong because −999.0 is not missing at all 
+2)-999.0 indicates nothing is meant to be there
+3)## Make a feature indicating level of "Nothingness"
+
+
+##############################################################
+
+
+
+-> The Higgs boson has seen first in three distinct decay channels
+
+#Confirms histogram plot of s vs weights  
+
+-> 
 
 
