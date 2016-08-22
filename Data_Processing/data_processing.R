@@ -20,22 +20,72 @@ Weight  = data$Weight
 Label   = data$Label
 
 data = data[, -c(1,32,33)]          # Get rid of EventId Weight Label
-PRI_jet_num = data$PRI_jet_num      # Jet number is a category variable so do not scale it
+#PRI_jet_num = data$PRI_jet_num     # Jet number is a category variable so do not scale it
 data = as.data.frame(scale(data))   # Scale data, it is scaling Jet number also 
-data$PRI_jet_num = PRI_jet_num      # Use unscaled Jet number in the data
+#data$PRI_jet_num = PRI_jet_num     # Use unscaled Jet number in the data
 
 tf = colSums(is.na(data)) !=0       # Columns missing any data 
 
 length(colnames(data)[tf])          # Number of columns missing any data
 #[1] 11
 
-colSums(is.na(data))[colnames(data)[colSums(is.na(data)) !=0] ]/nrow(data)*100     # Column Names and % of missing data 
-#DER_mass_MMC   DER_deltaeta_jet_jet       DER_mass_jet_jet    DER_prodeta_jet_jet DER_lep_eta_centrality 
-#15.2456                70.9828                70.9828                70.9828                70.9828 
-#PRI_jet_leading_pt    PRI_jet_leading_eta    PRI_jet_leading_phi  PRI_jet_subleading_pt PRI_jet_subleading_eta 
-#39.9652                39.9652                39.9652                70.9828                70.9828 
-#PRI_jet_subleading_phi 
-#70.9828
+ph = as.data.frame(colSums(is.na(data))[colnames(data)[colSums(is.na(data)) !=0] ]/nrow(data)*100 )    # Column Names and % of missing data 
+colnames(ph) = "per_undef"
+ph
+#per_undef
+#DER_mass_MMC             15.2456
+#DER_deltaeta_jet_jet     70.9828
+#DER_mass_jet_jet         70.9828
+#DER_prodeta_jet_jet      70.9828
+#DER_lep_eta_centrality   70.9828
+#PRI_jet_leading_pt       39.9652
+#PRI_jet_leading_eta      39.9652
+#PRI_jet_leading_phi      39.9652
+#PRI_jet_subleading_pt    70.9828
+#PRI_jet_subleading_eta   70.9828
+#PRI_jet_subleading_phi   70.9828
+table(ph)
+#ph
+#15.2456 39.9652 70.9828 
+#     1       3       7 
+sum(data$PRI_jet_num == 0)/nrow(data)*100
+#[1] 39.9652
+sum((data$PRI_jet_num == 0)| (data$PRI_jet_num == 1))/nrow(data)*100
+#[1] 70.9828
+table(data[is.na(data$DER_mass_MMC),"PRI_jet_num"])/sum(table(data[is.na(data$DER_mass_MMC),"PRI_jet_num"]))*100
+#        0         1         2         3 
+#68.539119 19.840479  7.745185  3.875216 
+
+data.variable = as.data.frame(cbind(data,"Label"= as.factor(Label)))
+data.variable = data.variable[is.na(data.variable$DER_mass_MMC),][-1]
+
+
+plots <- list()
+for (nm in names(data.variable)[-31]){
+  plots[[nm]] <- ggplot(data = data.variable, aes_string(x=nm)) + geom_density(aes(color = Label)) +  geom_density()
+  
+}
+
+for (nm in names(plots)){
+  print(plots[nm])
+  ggsave(paste0(nm,"undefinedhiggs_mass_density.png"))
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Histograms
+
+plots <- list()
+for (nm in names(data.variable)[-31]){
+  plots[[nm]] <- ggplot(data = data.variable, aes_string(x=nm)) + geom_histogram(aes(fill = Label),bins = 500,position = "dodge") 
+  
+}
+
+for (nm in names(plots)){
+  print(plots[nm])
+  ggsave(paste0(nm,"_undefinedhiggs_mass_density_histogram.png"))
+}
+
+
+
 
 colnames(data)[which(colSums(is.na(data))[colnames(data)[colSums(is.na(data)) !=0] ]/nrow(data)*100 >70)] # Name of Columns missing more than 70 % data
 #[1] "DER_mass_transverse_met_lep" "DER_mass_vis"                "DER_pt_h"                    "DER_deltaeta_jet_jet"       
@@ -85,31 +135,57 @@ g + geom_histogram(aes(fill = Label), binwidth = 0.1)
 ggsave("plots/s_AND_b_weight_histogram.png")
 
 
+ggplot(data = as.data.frame(Response), aes(x =Weight))  +
+  geom_density()
+ggsave("plots/s_AND_b_weight_density.png")
+
 g = ggplot(data = Response[Response$Weight <= max(Response$Weight[Response$Label == 's']),], aes(x =Weight))
 g + geom_histogram(aes(fill = Label), binwidth = 0.0002)
 ggsave("plots/s_weight_histogram.png")
+
+ggplot(data = as.data.frame(Response[Response$Weight <= max(Response$Weight[Response$Label == 's']),]), aes(x =Weight))  +
+  geom_density()
+ggsave("plots/s_weight_density.png")
 
 g = ggplot(data = Response[Response$Weight > max(Response$Weight[Response$Label == 's']),], aes(x =Weight))
 g + geom_histogram(aes(fill = Label), binwidth = 0.1)
 ggsave("plots/b_weight_histogram.png")
 
+ggplot(data = Response[Response$Weight > max(Response$Weight[Response$Label == 's']),], aes(x =Weight))  +
+  geom_density()
+ggsave("plots/b_weight_density.png")
+
 #####################################################################################
 
-data.variable = as.data.frame(cbind(data,"Label" = as.factor(Label)))       
+data.variable = as.data.frame(cbind(data,"Label" = as.factor(Label)))    
+data.variable$Label = Label
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Density 
 plots <- list()
-for (nm in names(data.variable)){
-  plots[[nm]] <- ggplot(data=data.variable) + geom_density(aes_string(x=nm))  + geom_density(aes(color= Label))
+for (nm in names(data.variable)[-31]){
+  plots[[nm]] <- ggplot(data = data.variable, aes_string(x=nm)) + geom_density(aes(color = Label)) +  geom_density()
                                                                                                  
 }
 
+for (nm in names(plots)){
+  print(plots[nm])
+  ggsave(paste0(nm,"_density.png"))
+}
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Histograms
 
+plots <- list()
+for (nm in names(data.variable)[-31]){
+  plots[[nm]] <- ggplot(data = data.variable, aes_string(x=nm)) + geom_histogram(aes(fill = Label),bins = 500,position = "dodge") 
+  
+}
 
+for (nm in names(plots)){
+  print(plots[nm])
+  ggsave(paste0(nm,"_histogram.png"))
+}
 
-
-
-
+########################################################################
 
 data_corr = data[complete.cases(data),]    # Events with complete data 
 M = round(cor(data_corr),2)                # Correlation matrix rounded to two significant digits 
