@@ -1,3 +1,12 @@
+# ------------------------------------------------------------------------------
+# Extended by: Team Demibots (Bernard O, Nanda R)
+# Created in: Aug 2016
+# Purpose to: Post-Competition Kaggle Higgs Boson ML Challenge
+# ------------------------------------------------------------------------------
+# Adapted fr: Original framework code sourced from TimR
+# Team Demibots extended and enhanced framework to work with more models
+# ------------------------------------------------------------------------------
+
 import os, math, time, pickle, sys
 import numpy as np
 import pandas as pd
@@ -9,14 +18,13 @@ from sklearn import linear_model
 from sklearn import naive_bayes
 from sklearn import preprocessing
 from sklearn import svm
-# from fancyimpute import KNN
-# BiScaler, NuclearNormMinimization, SoftImpute
+from sklearn.svm import SVC
+from sklearn.externals import joblib
 import xgboost as xgb
 
+
 def ams(s, b):
-    """
-    Approximate Median Significant function to evaluate solutions.
-    """
+    # AMS function
     br = 10.0
     radicand = 2 * ((s + b + br) * math.log(1.0 + s / (b + br)) - s)
     if radicand < 0:
@@ -26,36 +34,8 @@ def ams(s, b):
         return math.sqrt(radicand)
 
 
-def load(alg, filename):
-    """
-    Load a previously training model from disk.
-    """
-    if alg == 'xgboost':
-        model = xgb.Booster({'nthread': 16}, model_file=filename)
-    else:
-        model_file = open(filename, 'rb')
-        model = pickle.load(model_file)
-        model_file.close()
-
-    return model
-
-
-def save(alg, model, filename):
-    """
-    Persist a trained model to disk.
-    """
-    if alg == 'xgboost':
-        model.save_model(filename)
-    else:
-        model_file = open(filename, 'wb')
-        pickle.dump(model, model_file)
-        model_file.close()
-
-
 def process_training_data(filename, features, impute, standardize, whiten):
-    """
-    Reads in training data and prepares numpy arrays.
-    """
+    # Reads in training data and prepares numpy arrays.
     training_data = pd.read_csv(filename, sep=',')
 
     # add a nominal label (0, 1)
@@ -67,9 +47,6 @@ def process_training_data(filename, features, impute, standardize, whiten):
     w = training_data.iloc[:, features+1].values
 
     # optionally impute the -999 values
-    # Bernard - added the median and most frequent code for imputting
-    # Venkat - added the Knn and Interpolate imputation
-    # defaults mean if passed with no parameters
     if impute == 'mean':
         imp = preprocessing.Imputer(missing_values=-999, strategy="mean")
         X = imp.fit_transform(X)
@@ -79,15 +56,6 @@ def process_training_data(filename, features, impute, standardize, whiten):
     elif impute == "most_frequent":
         imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
-    #elif impute == "knn":
-        #X = X.replace('-999','NaN')
-        #X = KNN(k=sqrt(len(X))).complete(X)
-    #elif impute == "interpolate":
-        #X[X==-999] = np.NaN
-        #X = X.interpolate()
-    #elif impute == 'biscaler':
-    #elif impute == "nuclear":
-    #elif impute == "softimpute":
     elif impute == 'zeros':
         X[X == -999] = 0
 
@@ -106,58 +74,8 @@ def process_training_data(filename, features, impute, standardize, whiten):
     return training_data, X, y, w, scaler, pca
 
 
-def visualize(training_data, X, y, scaler, pca, features):
-    """
-    Computes statistics describing the data and creates some visualizations
-    that attempt to highlight the underlying structure.
-
-    Note: Use '%matplotlib inline' and '%matplotlib qt' at the IPython console
-    to switch between display modes.
-    """
-
-    # feature histograms
-    fig1, ax1 = plt.subplots(4, 4, figsize=(20, 10))
-    for i in range(16):
-        ax1[i % 4, i / 4].hist(X[:, i])
-        ax1[i % 4, i / 4].set_title(training_data.columns[i + 1])
-        ax1[i % 4, i / 4].set_xlim((min(X[:, i]), max(X[:, i])))
-    fig1.tight_layout()
-
-    fig2, ax2 = plt.subplots(4, 4, figsize=(20, 10))
-    for i in range(16, features):
-        ax2[i % 4, (i - 16) / 4].hist(X[:, i])
-        ax2[i % 4, (i - 16) / 4].set_title(training_data.columns[i + 1])
-        ax2[i % 4, (i - 16) / 4].set_xlim((min(X[:, i]), max(X[:, i])))
-    fig2.tight_layout()
-
-    # covariance matrix
-    if scaler is not None:
-        X = scaler.transform(X)
-
-    cov = np.cov(X, rowvar=0)
-
-    fig3, ax3 = plt.subplots(figsize=(16, 10))
-    p = ax3.pcolor(cov)
-    fig3.colorbar(p, ax=ax3)
-    ax3.set_title('Feature Covariance Matrix')
-
-    # pca plots
-    if pca is not None:
-        X = pca.transform(X)
-
-        fig4, ax4 = plt.subplots(figsize=(16, 10))
-        ax4.scatter(X[:, 0], X[:, 1], c=y)
-        ax4.set_title('First & Second Principal Components')
-
-        fig5, ax5 = plt.subplots(figsize=(16, 10))
-        ax5.scatter(X[:, 1], X[:, 2], c=y)
-        ax5.set_title('Second & Third Principal Components')
-
-
-def train(X, y, w, alg, scaler, pca):
-    """
-    Trains a new model using the training data.
-    """
+def train(X, y, w, alg, scaler, pca, features):
+    # Trains a new model using the training data.
     if scaler is not None:
         X = scaler.transform(X)
 
@@ -175,10 +93,13 @@ def train(X, y, w, alg, scaler, pca):
     elif alg == 'logistic':
         model = linear_model.LogisticRegression()
     elif alg == 'svm':
-        model = svm.SVC()
+        model = svm.SVC(probability=True)   # kernel = linear, poly, rbf, sigmoid, precomputed
     elif alg == 'boost':
-        model = ensemble.GradientBoostingClassifier(n_estimators=100, max_depth=7,
-            min_samples_split=200, min_samples_leaf=200, max_features=30)
+        model = ensemble.GradientBoostingClassifier(n_estimators=100, max_depth=10,
+            min_samples_split=200, min_samples_leaf=200, max_features=6)
+    elif alg == 'forest':
+        model = ensemble.RandomForestClassifier(n_estimators=100, max_depth=10,
+            min_samples_split=200, min_samples_leaf=200, max_features=6)
     else:
         print 'No model defined for ' + alg
         exit()
@@ -186,15 +107,13 @@ def train(X, y, w, alg, scaler, pca):
     model.fit(X, y)
 
     t1 = time.time()
-    print 'Model trained in {0:3f} s.'.format(t1 - t0)
+    print 'Model trained in {0:.3f} s.'.format(t1 - t0)
 
     return model
 
 
 def train_xgb(X, y, w, scaler, pca):
-    """
-    Trains a boosted trees model using the XGBoost library.
-    """
+    # Trains a boosted trees model using the XGBoost library.
     t0 = time.time()
 
     xgmat = xgb.DMatrix(X, label=y, missing=-999.0, weight=w)
@@ -205,9 +124,9 @@ def train_xgb(X, y, w, scaler, pca):
     param = {}
     param['objective'] = 'binary:logitraw'
     param['scale_pos_weight'] = w_neg/w_pos
-    param['eta'] = 0.08
-    param['max_depth'] = 7
-    param['subsample'] = 0.8
+    param['eta'] = 0.12
+    param['max_depth'] = 10
+    param['subsample'] = 0.9
     param['eval_metric'] = 'auc'
     param['silent'] = 1
 
@@ -217,16 +136,14 @@ def train_xgb(X, y, w, scaler, pca):
     model = xgb.train(plst, xgmat, 128, watchlist)
 
     t1 = time.time()
-    print 'Model trained in {0:3f} s.'.format(t1 - t0)
+    print 'Model trained in {0:.3f} s.'.format(t1 - t0)
 
     return model
 
 
 def predict(X, model, alg, threshold, scaler, pca):
-    """
-    Predicts the probability of a positive outcome and converts the
-    probability to a binary prediction based on the cutoff percentage.
-    """
+    # Predicts the probability of a positive outcome and converts the
+    # probability to a binary prediction based on the cutoff percentage.
     if scaler is not None:
         X = scaler.transform(X)
 
@@ -246,9 +163,7 @@ def predict(X, model, alg, threshold, scaler, pca):
 
 
 def score(y, y_est, w):
-    """
-    Create weighted signal and background sets and calculate the AMS.
-    """
+    # Create weighted signal and background sets and calculate the AMS.
     y_signal = w * (y == 1.0)
     y_background = w * (y == 0.0)
     s = np.sum(y_signal * (y_est == 1.0))
@@ -257,14 +172,9 @@ def score(y, y_est, w):
     return ams(s, b)
 
 
-def cross_validate(X, y, w, alg, scaler, pca, threshold):
-    """
-    Perform cross-validation on the training set and compute the AMS scores.
-    """
-    import warnings
-    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
-
-    scores = [0, 0, 0]
+def cross_validate(X, y, w, alg, scaler, pca, threshold, features):
+    # Perform cross-validation on the training set and compute the AMS scores.
+    scores = [0,0,0]
     folds = cross_validation.StratifiedKFold(y, n_folds=3)
     i = 0
 
@@ -281,7 +191,7 @@ def cross_validate(X, y, w, alg, scaler, pca, threshold):
         w_val[y_val == 0] *= (sum(w[y == 0]) / sum(w_val[y_val == 0]))
 
         # train the model
-        model = train(X_train, y_train, w_train, alg, scaler, pca)
+        model = train(X_train, y_train, w_train, alg, scaler, pca, features)
 
         # predict and score performance on the validation set
         y_val_prob, y_val_est = predict(X_val, model, alg, threshold, scaler, pca)
@@ -292,16 +202,11 @@ def cross_validate(X, y, w, alg, scaler, pca, threshold):
 
 
 def process_test_data(filename, features, impute):
-    """
-    Reads in test data and prepares numpy arrays.
-    """
+    # Reads in test data and prepares numpy arrays.
     test_data = pd.read_csv(filename, sep=',')
     X_test = test_data.iloc[:, 1:features+1].values
 
     # optionally impute the -999 values
-    # Bernard - added the median and most frequent code for imputting
-    # Venkat - added the Knn and Interpolate imputation
-    # defaults mean if passed with no parameters
     if impute == 'mean':
         imp = preprocessing.Imputer(missing_values=-999, strategy="mean")
         X = imp.fit_transform(X)
@@ -311,15 +216,6 @@ def process_test_data(filename, features, impute):
     elif impute == "most_frequent":
         imp = preprocessing.Imputer(missing_values=-999, strategy="most_frequent")
         X = imp.fit_transform(X)
-    #elif impute == "knn":
-        #X = X.replace('-999','NaN')
-        #X = KNN(k=sqrt(len(X))).complete(X)
-    #elif impute == "interpolate":
-        #X[X==-999] = np.NaN
-        #X = X.interpolate()
-    #elif impute == 'biscaler':
-    #elif impute == "nuclear":
-    #elif impute == "softimpute":
     elif impute == 'zeros':
         X[X == -999] = 0
 
@@ -327,9 +223,7 @@ def process_test_data(filename, features, impute):
 
 
 def create_submission(test_data, y_test_prob, y_test_est, submit_file):
-    """
-    Create a new data frame with the submission data.
-    """
+    # Create a new data frame with the submission data.
     temp = pd.DataFrame(y_test_prob, columns=['RankOrder'])
     temp2 = pd.DataFrame(y_test_est, columns=['Class'])
     submit = pd.DataFrame([test_data.EventId, temp.RankOrder, temp2.Class]).transpose()
@@ -356,24 +250,20 @@ def create_submission(test_data, y_test_prob, y_test_est, submit_file):
 
 def main():
     # perform some initialization
-    features = 30
-    threshold = 85
-    alg = 'xgboost'  # bayes, logistic, svm, boost, xgboost
-    impute = 'interpolate'  # mean, median, most_frequent, knn, interpolate, zeros, none
-    standardize = False
-    whiten = False
+    alg = 'bayes'
+    features = 25
+    threshold = 80
+    impute = 'none'
+    standardize = True
+    whiten = True
     load_training_data = True
-    load_model = False
     train_model = True
-    save_model = False
-    create_visualizations = False
     create_submission_file = False
     code_dir = './'
     data_dir = './'
-    training_file = 'training.csv'
-    test_file = 'test.csv'
+    training_file = ''
+    test_file = ''
     submit_file = 'submission.csv'
-    model_file = 'model.pkl'
 
     os.chdir(code_dir)
 
@@ -386,17 +276,9 @@ def main():
         training_data, X, y, w, scaler, pca = process_training_data(
             data_dir + training_file, features, impute, standardize, whiten)
 
-    if create_visualizations:
-        print 'Creating visualizations...'
-        visualize(training_data, X, y, scaler, pca, features)
-
-    if load_model:
-        print 'Loading model from disk...'
-        model = load(alg, data_dir + model_file)
-
     if train_model:
         print 'Training model on full data set...'
-        model = train(X, y, w, alg, scaler, pca)
+        model = train(X, y, w, alg, scaler, pca, features)
 
         print 'Calculating predictions...'
         y_prob, y_est = predict(X, model, alg, threshold, scaler, pca)
@@ -406,12 +288,8 @@ def main():
         print 'AMS =', ams_val
 
         print 'Performing cross-validation...'
-        val = cross_validate(X, y, w, alg, scaler, pca, threshold)
+        val = cross_validate(X, y, w, alg, scaler, pca, threshold, features)
         print'Cross-validation AMS =', val
-
-    if save_model:
-        print 'Saving model to disk...'
-        save(alg, model, data_dir + model_file)
 
     if create_submission_file:
         print 'Reading in test data...'
